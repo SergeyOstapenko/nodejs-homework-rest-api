@@ -12,7 +12,11 @@ const addSchema = Joi.object({
   name: Joi.string().required(),
   email: Joi.string().required(),
   phone: Joi.string().required(),
-  favorite: Joi.string().required(), 
+  favorite: Joi.boolean(), 
+});
+
+const updateFavoriteSchema = Joi.object({
+  favorite: Joi.boolean().required(), 
 });
 
 
@@ -88,11 +92,11 @@ router.put("/:id", async (req, res, next) => {
 
 router.patch("/:id/favorite", async (req, res, next) => {
     try {
-      const favoriteContact = req.body;
-    if(Object.keys(favoriteContact).length === 0) {
+      const contact = req.body;
+    if(Object.keys(contact).length === 0) {
       throw RequestError(400, "missing field favorite");
     }
-    const { error } = addSchema.validate(req.body);
+    const { error } = updateFavoriteSchema.validate(req.body);
     if (error) {
       throw RequestError(404, error.message);
     }
