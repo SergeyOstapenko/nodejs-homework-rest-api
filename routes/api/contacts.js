@@ -1,7 +1,9 @@
 const express = require("express");
 const Joi = require("joi");
 
-const contacts = require("../../models/contacts");
+const Contact = require('../../models/contact');
+
+// const contacts = require("../../models/contacts");
 
 const { RequestError } = require("../../helpers");
 
@@ -15,7 +17,7 @@ const addSchema = Joi.object({
 
 router.get("/", async (req, res, next) => {
   try {
-    const result = await contacts.listContacts();
+    const result = await Contact.find();
     res.json(result);
   } catch (error) {
     next(error);
@@ -25,7 +27,7 @@ router.get("/", async (req, res, next) => {
 router.get("/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
-    const result = await contacts.getContactById(id);
+    const result = await Contact.findById(id);
     if (!result) {
       throw RequestError(404);
     }
@@ -41,7 +43,7 @@ router.post("/", async (req, res, next) => {
     if (error) {
       throw RequestError(400, "missing required name field");
     }
-    const result = await contacts.addContact(req.body);
+    const result = await Contact.create(req.body);
     res.status(201).json(result);
   } catch (error) {
     next(error);
@@ -51,7 +53,7 @@ router.post("/", async (req, res, next) => {
 router.delete("/:id", async (req, res, next) => {
   try {
     const {id} = req.params;
-    const result = await contacts.removeContact(id);
+    const result = await Contact.findByIdAndRemove(id);
     if(!result) {
       throw RequestError(404)
     }
@@ -72,7 +74,7 @@ router.put("/:id", async (req, res, next) => {
       throw RequestError(404, error.message);
     }
     const {id} = req.params
-    const result = await contacts.updateContact(id, req.body);
+    const result = await Contact.findByIdAndUpdate(id, req.body, {new:true});
     if(!result) {
       throw RequestError(404)
     }
