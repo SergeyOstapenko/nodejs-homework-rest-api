@@ -93,6 +93,7 @@ router.put("/:id", async (req, res, next) => {
 router.patch("/:id/favorite", async (req, res, next) => {
     try {
       const contact = req.body;
+      console.log(req.body);
     if(Object.keys(contact).length === 0) {
       throw RequestError(400, "missing field favorite");
     }
