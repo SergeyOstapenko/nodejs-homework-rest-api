@@ -3,7 +3,6 @@ const Joi = require("joi");
 
 const Contact = require('../../models/contact');
 
-// const contacts = require("../../models/contacts");
 
 const { RequestError } = require("../../helpers");
 
@@ -13,7 +12,14 @@ const addSchema = Joi.object({
   name: Joi.string().required(),
   email: Joi.string().required(),
   phone: Joi.string().required(),
+  favorite: Joi.boolean(), 
 });
+
+const updateFavoriteSchema = Joi.object({
+  favorite: Joi.boolean().required(), 
+});
+
+
 
 router.get("/", async (req, res, next) => {
   try {
@@ -74,7 +80,7 @@ router.put("/:id", async (req, res, next) => {
       throw RequestError(404, error.message);
     }
     const {id} = req.params
-    const result = await Contact.findByIdAndUpdate(id, req.body, {new:true});
+    const result = await Contact.findByIdAndUpdate(id, req.body, {new: true});
     if(!result) {
       throw RequestError(404)
     }
@@ -82,6 +88,28 @@ router.put("/:id", async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+});
+
+router.patch("/:id/favorite", async (req, res, next) => {
+    try {
+      const contact = req.body;
+      console.log(req.body);
+    if(Object.keys(contact).length === 0) {
+      throw RequestError(400, "missing field favorite");
+    }
+    const { error } = updateFavoriteSchema.validate(req.body);
+    if (error) {
+      throw RequestError(404, error.message);
+    }
+    const {id} = req.params
+    const result = await Contact.findByIdAndUpdate(id, req.body, {new: true});
+    if(!result) {
+      throw RequestError(404)
+    }
+    res.json(result);
+    } catch (error) {
+      next(error);
+    }
 });
 
 module.exports = router;
